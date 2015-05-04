@@ -40,10 +40,10 @@ void BinStatusPacket::toBytes(vector<char>& result) {
 		for(unsigned j=0;j<10;j++){
 			result.push_back(p[j]);
 		}
-	}
+	}/*
 	for(int i=0;i<result.size();i++){
 		printf("%d,",result[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 
 }

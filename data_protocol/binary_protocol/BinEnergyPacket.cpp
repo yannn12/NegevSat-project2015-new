@@ -42,8 +42,8 @@ void BinEnergyPacket::toBytes(vector<char>& result) {
 			result.push_back(p[j]);
 		}
 	}
-	for(int i=0;i<result.size();i++){
+	/*for(int i=0;i<result.size();i++){
 		printf("%d,",result[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 }

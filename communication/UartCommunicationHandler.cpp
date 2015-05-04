@@ -36,10 +36,10 @@ bool UartCommunicationHandler::send(char* buffer, int length){
 	if (fd == -1){
 		return false;
 	}
-	for(int i=0;i<length;i++){
+	/*for(int i=0;i<length;i++){
 		printf("%d,",buffer[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 	//printf("Opened COM1, fd=%d\n\n", fd);
 	memcpy(temp3,buffer,length);
 	vector<char> fixedBuffer = hideDelimiter(buffer,length);
