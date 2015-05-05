@@ -95,7 +95,7 @@ private:
 };
 
 // Satellite is facing the ground station - doing autonomous operations and sending telemetry
-SUBSTATE(FacingGroundStation, Operational) {
+SUBSTATE(FacingGroundStation, Top) {
 	STATE(FacingGroundStation)
 
 	void work();
@@ -107,6 +107,15 @@ private:
 // Satellite is not facing the ground station and doing autonomous operations
 SUBSTATE(RegularOperations, Operational) {
 	STATE(RegularOperations)
+
+	void work();
+
+private:
+	void init();
+};
+
+SUBSTATE(Idle, Operational) {
+	STATE(Idle)
 
 	void work();
 
@@ -159,7 +168,22 @@ void Operational::init() {
 }
 void Operational::work(){
 	//printf(" * StateMachine TASK:: Operational::work *\n");
-	setState<RegularOperations>();
+	setState<Idle>();
+}
+
+// State Operational
+void Idle::init() {
+	printf(" * StateMachine TASK:: Entering Operational State *\n");
+
+}
+void Idle::work(){
+	rtems_event_set set = TOP::box().receive_event();
+	//printf(" * StateMachine TASK:: Operational::work *\n");
+	if (set != NO_EVENT_RECEIVED){
+		if (set & START_EXPIRIMENT_EVENT){
+			setState<RegularOperations>();
+		}
+	}
 }
 
 // State RegularOperations
