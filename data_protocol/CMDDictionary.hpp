@@ -24,6 +24,14 @@
 #define THERMAL_CTRL_ON			12
 #define THERMAL_CTRL_STANDBY	13
 
+//new commands
+#define PASS					14
+#define SET_ENERGY				15 // priority = energy value
+#define SET_BATTARY				16 // priority = battary value
+#define SET_SPINRATE			17 // priority = spinrate value
+#define START_EXPERIMENT		18
+
+
 // simulation commands
 #define SET_TEMPERATURE			100
 #define SET_ENERGY				101

@@ -114,6 +114,14 @@ void CommandExecutor::execute(WorkDescription::WorkDescription work){
 		printf(" * LifeCycle TASK::CommandExecutor: disconnecting from ground! *\n");
 		modules_request->request_connected(STANDBY);
 		break;
+
+	//new commands
+
+	case START_EXPERIMENT:
+		printf(" * LifeCycle TASK::CommandExecutor: start experiment *\n");
+		out = START_EXPIRIMENT_EVENT;
+		status = send_event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+		break;
 	default:
 		printf(" * LifeCycle TASK::CommandExecutor: Illegal command in work! *\n");
 	}
