@@ -309,9 +309,9 @@ void LifeCycleTask::module_ctrl(){
 	int low_en = 0;
 
 	if (modules_request.get_request_connected() == TURN_ON){
-		out = RECEIVED_COMMUNICATION_EVENT;
-		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
-		modules_request.request_connected(NO_CHANGE);
+		//out = RECEIVED_COMMUNICATION_EVENT;
+		//event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+		//modules_request.request_connected(NO_CHANGE);
 	}
 	if (modules_request.get_request_connected() == STANDBY){
 		out = LOST_COMMUNICATION_EVENT;

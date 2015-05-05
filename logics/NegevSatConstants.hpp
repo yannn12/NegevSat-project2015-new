@@ -15,6 +15,9 @@
 #define NUMBER_OF_PASSIVE_TASKS			1 // passive means not receiving events from the state machine task
 #define NUMBER_OF_ACTIVE_TASKS			NUMBER_OF_TASKS - NUMBER_OF_PASSIVE_TASKS
 
+
+#define TIME_FACTOR 					0.1
+
 #define SEND_TASK_INDEX					0
 #define RECEIVE_TASK_INDEX				1
 #define MP_TASK_INDEX					2

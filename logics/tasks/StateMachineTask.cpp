@@ -12,12 +12,17 @@
 #include <rtems++/rtemsEvent.h>
 #include "logics/Global.hpp"
 #include <stdlib.h>
+#include "logics/Timer.hpp"
 
 #define ROUNDS_TO_RESEND		10
 
 // Basic state machine of the satellite
 namespace Satellite {
+rtems_timer_service_routine Timer_Routine( rtems_id id, void *ignored )
+{
 
+
+}
 //////////////////////////////////////////////////////////////////////
 // State declarations
 
@@ -26,7 +31,12 @@ TOPSTATE(Top) {
 
 	// Top state data (visible to all substates)
 	struct Box {
-		Box() : state(INIT_STATE), counter(0) {}
+		Box() : state(INIT_STATE), counter(0),timer(rtems_build_name( 'T', 'M', 'R', '1' )) {
+
+		}
+		rtems_status_code alarmTimer(rtems_interval ticks,rtems_timer_service_routine_entry routine,void *user_data){
+			timer.alarmTimer(ticks,routine,user_data);
+		}
 
 		void send_event(int type, int index) {
 			rtems_event_set out;
@@ -56,11 +66,13 @@ TOPSTATE(Top) {
 		void reset_counter(){
 			counter = 0;
 		}
-
+	public:
+		Timer timer;
 	private:
 		int state;
 		int counter;
 		rtemsEvent event;
+
 	};
 
 	STATE(Top)
@@ -174,6 +186,10 @@ void Operational::work(){
 // State Operational
 void Idle::init() {
 	printf(" * StateMachine TASK:: Entering Operational State *\n");
+	rtems_id timerid;
+	TOP::box().alarmTimer(2 * rtems_clock_get_ticks_per_second(),Timer_Routine,NULL);
+
+
 
 }
 void Idle::work(){
@@ -182,6 +198,9 @@ void Idle::work(){
 	if (set != NO_EVENT_RECEIVED){
 		if (set & START_EXPIRIMENT_EVENT){
 			setState<RegularOperations>();
+		}
+		else if (set & RECEIVED_COMMUNICATION_EVENT){
+			setState<FacingGroundStation>();
 		}
 	}
 }
@@ -193,6 +212,7 @@ void RegularOperations::init() {
 	for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
 		TOP::box().send_event(REGULAR_OPS_STATE_EVENT, i);
 	}
+
 }
 
 void RegularOperations::work() {
@@ -314,6 +334,9 @@ StateMachineTask::~StateMachineTask() {
 void StateMachineTask::body(rtems_task_argument argument){
 
 	Macho::Machine<Satellite::Top> m;
+	rtems_id timerid =0;
+
+
 
 	for (;;){
 

@@ -82,7 +82,7 @@ rtems_task SendTask::body(rtems_task_argument argument){
 				1 * 2 * rtems_clock_get_ticks_per_second());
 		obtain_state();
 		obtain_send_type();
-		if (connected||true){
+		if (connected){
 			packet_counter++;
 			vector<char> packet;
 			switch (send_type) {

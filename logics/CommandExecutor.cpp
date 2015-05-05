@@ -116,7 +116,11 @@ void CommandExecutor::execute(WorkDescription::WorkDescription work){
 		break;
 
 	//new commands
-
+	case PASS:
+		printf(" * LifeCycle TASK::CommandExecutor: start experiment *\n");
+		out = RECEIVED_COMMUNICATION_EVENT;
+		status = send_event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+		break;
 	case START_EXPERIMENT:
 		printf(" * LifeCycle TASK::CommandExecutor: start experiment *\n");
 		out = START_EXPIRIMENT_EVENT;
