@@ -350,12 +350,12 @@ void LifeCycleTask::body(rtems_task_argument argument){
 		//printf(" * LifeCycle TASK! *\n");
 		obtain_state();
 		/*if (state != INIT_STATE){*/
-		attitude_control(count);
-		logics();
-		perform_cmd();
-		monitoring();
-		module_ctrl(); // turn on or off modules
-		thermal_ctrl();
+		attitude_control(count); // collect samples and send packets
+		logics(); 					//change stat if has problem
+		perform_cmd();				//get command and execute (input)
+		monitoring();				// check moduls stats and tell manufactions
+		module_ctrl(); 				// turn on or off modules
+		thermal_ctrl();				//fix problem with temature
 		count++; // this counter can be removed/modified - used to delay to samples rate (1/3 rounds)
 		count = count % 3;
 		/*}*/
