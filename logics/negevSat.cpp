@@ -57,7 +57,7 @@ using namespace stringutils;
 using namespace timeutils;
 using namespace std;
 
-bool tests = true;
+bool tests = false;
 
 rtemsTask::rtemsTask* task_table[NUMBER_OF_TASKS];
 rtems_time_of_day current_time;
@@ -94,10 +94,11 @@ rtems_task Init(rtems_task_argument )
 {
 	set_time();
 
-	PacketFactory::factory = new BinPacketFactory();
+	PacketFactory::factory = new XmlPacketFactory();
 
 	if(tests){
-		AllTests::AllTests tests(/*CMD_PARSER_TESTS*/ /*TLM_PARSER_TESTS*/ /*SEND_TESTS*/ /*RECEIVE_TESTS*//*VALIDATOR_TESTS*/ /*WORK_QUEUE_TESTS*/ SEND_RECEIVE_TESTS);
+		//AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
+		AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
 		tests.run_all_tests();
 	}
 
