@@ -50,9 +50,12 @@ void SendTask::obtain_state(){
 	//printf(" * SendTask TASK:: obtain_state *\n");
 	rtemsEvent event;
 	rtems_event_set out;
-	rtems_status_code status = event.receive(REGULAR_OPS_STATE_EVENT | FACING_GROUND_STATE_EVENT | STANDBY_STATE_EVENT, out, 0, rtemsEvent::no_wait, rtemsEvent::any);
+	rtems_status_code status = event.receive(REGULAR_OPS_STATE_EVENT | FACING_GROUND_STATE_EVENT | STANDBY_STATE_EVENT|IDLE_STATE_EVENT, out, 0, rtemsEvent::no_wait, rtemsEvent::any);
 	if (status == RTEMS_SUCCESSFUL){
 		//printf(" * SEND TASK:: changed state to %d *\n", (int)out);
+		if (out & IDLE_STATE_EVENT){
+			connected = false;
+		}
 		if (out & STANDBY_STATE_EVENT){
 			connected = false;
 		}

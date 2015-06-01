@@ -13,13 +13,20 @@
 #include "logics/Global.hpp"
 #include <stdlib.h>
 #include "logics/Timer.hpp"
-
+#include "logics/Flag.hpp"
+#include <rtems++/rtemsSemaphore.h>
 #define ROUNDS_TO_RESEND		10
 
 // Basic state machine of the satellite
 namespace Satellite {
+
+Flag flag;
+
+
 rtems_timer_service_routine Timer_Routine( rtems_id id, void *ignored )
 {
+
+	flag.setFlag(true);
 
 
 }
@@ -166,12 +173,20 @@ void Top::init() {
 
 // InitState state
 void InitState::init() {
-	printf(" * StateMachine TASK:: Entering Init State *\n");
+	printf(" * StateMachine TASK:: Entering Launch Mode *\n");
+	flag.setFlag(false);
+	printf("* Start 30 Minutes Timer *\n");
+	// TODO check
+	TOP::box().alarmTimer(TIME_FACTOR_LAUNCH_MODE*30 *60* rtems_clock_get_ticks_per_second(),Timer_Routine,NULL);
 }
 
 void InitState::work() {
 	//printf(" * StateMachine TASK:: InitState::work *\n");
-	setState<Operational>();
+	if(flag.getFlag() == true){
+		printf("* Timer Elapsed *\n");
+		setState<Operational>();
+		return;
+	}
 }
 // State Operational
 void Operational::init() {
@@ -185,14 +200,18 @@ void Operational::work(){
 
 // State Operational
 void Idle::init() {
-	printf(" * StateMachine TASK:: Entering Operational State *\n");
-	rtems_id timerid;
-	TOP::box().alarmTimer(2 * rtems_clock_get_ticks_per_second(),Timer_Routine,NULL);
+	printf(" * StateMachine TASK:: Entering Idle State *\n");
+	TOP::box().reset_counter();
+	for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
+		TOP::box().send_event(IDLE_STATE_EVENT, i);
+	}
 
 
 
 }
 void Idle::work(){
+
+
 	rtems_event_set set = TOP::box().receive_event();
 	//printf(" * StateMachine TASK:: Operational::work *\n");
 	if (set != NO_EVENT_RECEIVED){
@@ -201,6 +220,11 @@ void Idle::work(){
 		}
 		else if (set & RECEIVED_COMMUNICATION_EVENT){
 			setState<FacingGroundStation>();
+		}
+	}
+	if (TOP::box().increase_counter()){
+		for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
+			TOP::box().send_event(IDLE_STATE_EVENT, i);
 		}
 	}
 }
@@ -212,10 +236,20 @@ void RegularOperations::init() {
 	for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
 		TOP::box().send_event(REGULAR_OPS_STATE_EVENT, i);
 	}
+	rtems_id timerid;
+	flag.setFlag(false);
+	printf(" * StateMachine TASK:: Start 2.5 Minuts timer *\n");
+	// TODO check
+	TOP::box().alarmTimer(TIME_FACTOR*2.5 *60* rtems_clock_get_ticks_per_second(),Timer_Routine,NULL);
 
 }
 
 void RegularOperations::work() {
+	if(flag.getFlag() == true){
+		printf("* Timer Elapsed *\n");
+		setState<Idle>();
+		return;
+	}
 	//printf(" * StateMachine TASK:: RegularOperations::work *\n");
 	rtems_event_set set = TOP::box().receive_event();
 	//printf(" * StateMachine TASK:: set received: %d *\n", (int)set);
@@ -244,9 +278,19 @@ void FacingGroundStation::init() {
 	for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
 		TOP::box().send_event(FACING_GROUND_STATE_EVENT, i);
 	}
+	flag.setFlag(false);
+	printf(" * StateMachine TASK:: Start 4 Minuts timer *\n");
+	// TODO check
+	TOP::box().alarmTimer(TIME_FACTOR*9 *60* rtems_clock_get_ticks_per_second(),Timer_Routine,NULL);
+
 }
 
 void FacingGroundStation::work() {
+	if(flag.getFlag() == true){
+		printf("* Timer Elapsed *\n");
+		setState<Idle>();
+		return;
+	}
 	//printf(" * StateMachine TASK:: FacingGroundStation::work *\n");
 	rtems_event_set set = TOP::box().receive_event();
 	//printf(" * StateMachine TASK:: set received: %d *\n", (int)set);
@@ -279,6 +323,12 @@ void Safe::init() {
 
 void Safe::work() {
 	//printf(" * StateMachine TASK:: FacingGroundStation::work *\n");
+
+	//todo cancel
+	printf(" * The System Is OK Exiting Safe *\n");
+	setState<Operational>();
+	return;
+
 	rtems_event_set set = TOP::box().receive_event();
 	if (set != NO_EVENT_RECEIVED){
 		if (set & MOVE_TO_OP_EVENT){
