@@ -7,6 +7,8 @@
 
 #include <tests/XMLValidatorTests.hpp>
 #include "data_protocol/ValidatorFactory.hpp"
+#include <string.h>
+#include <stdio.h>
 
 
 using namespace std;
@@ -34,7 +36,7 @@ char* XMLValidatorTests::test_valid(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(296, packet));
+	mu_assert("error, build packet fail", create_packet(strlen(packet), packet));
 	mu_assert("error, validate failed", validator->validate());
 	return 0;
 }
@@ -48,7 +50,7 @@ char* XMLValidatorTests::test_bad_xml(){
 				"<mission opcode='2' priority='1' time='20140531165755'/>"
 				"</upstreamPacket>"
 				"</pa";
-		mu_assert("error, build packet should fail", !create_packet(291, packet));
+		mu_assert("error, build packet should fail", !create_packet(strlen(packet), packet));
 		return 0;
 }
 
@@ -62,7 +64,9 @@ char* XMLValidatorTests::test_invalid_packet_element(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet1>";
-	mu_assert("error, build packet fail", create_packet(298, packet));
+	printf("Building Packet... (should fail)\n");
+
+	mu_assert("error, build packet fail", create_packet(strlen(packet), packet));
 	mu_assert("error, validate should fail failed", !validator->validate());
 	return 0;
 }
@@ -77,7 +81,7 @@ char* XMLValidatorTests::test_without_upstream(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacke>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(294, packet));
+	mu_assert("error, build packet fail", create_packet(strlen(packet), packet));
 	mu_assert("error, validate should fail failed", !validator->validate());
 	return 0;
 }
@@ -93,7 +97,7 @@ char* XMLValidatorTests::test_invalid_missions(){
 			"<mission3 opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(299, packet));
+	mu_assert("error, build packet fail", create_packet(strlen(packet), packet));
 	mu_assert("error, validate should fail failed", !validator->validate());
 
 	// test2
@@ -102,7 +106,7 @@ char* XMLValidatorTests::test_invalid_missions(){
 			"<upstreamPacket time='20140531165730'>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(118, packet2));
+	mu_assert("error, build packet fail", create_packet(strlen(packet2), packet2));
 	mu_assert("error, validate should fail", !validator->validate());
 
 	//test3
@@ -114,7 +118,7 @@ char* XMLValidatorTests::test_invalid_missions(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(285, packet3));
+	mu_assert("error, build packet fail", create_packet(strlen(packet3), packet3));
 	mu_assert("error, validate should fail", !validator->validate());
 
 	//test4
@@ -126,7 +130,7 @@ char* XMLValidatorTests::test_invalid_missions(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(274, packet4));
+	mu_assert("error, build packet fail", create_packet(strlen(packet4), packet4));
 	mu_assert("error, validate should fail", !validator->validate());
 	return 0;
 }
@@ -159,7 +163,7 @@ char* XMLValidatorTests::test_many_elements(){
 			"<mission opcode='2' priority='1' time='20140531165755'/>"
 			"</upstreamPacket>"
 			"</packet>";
-	mu_assert("error, build packet fail", create_packet(544, packet2));
+	mu_assert("error, build packet fail", create_packet(strlen(packet2), packet2));
 	mu_assert("error, validate should fail", !validator->validate());
 
 	return 0;
