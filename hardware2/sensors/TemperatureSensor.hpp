@@ -12,11 +12,13 @@ using namespace std;
 
 class TemperatureSensor: public ISensor {
 
-public:
+private:
 	int temperature;
 
-	int getSample();
-	void setTemperature(int temp);
+public:
+	int getSample(bool useI2C);
+	void setValue(int val);
+
 
 	TemperatureSensor();
 	virtual ~TemperatureSensor();

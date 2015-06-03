@@ -14,6 +14,7 @@
 #include "communication/SendReceiveQueue.hpp"
 #include "data_protocol/TLMParser.hpp"
 #include "hardware/HardwareState.hpp"
+#include "hardware2/HardwareStub.hpp"
 #include "data_protocol/Sample.hpp"
 #include "logics/CommandExecutor.hpp"
 #include <string>
@@ -31,7 +32,10 @@ private:
 	WorkQueue::WorkQueue* rdy_works;
 	SendReceiveQueue::SendReceiveQueue** send_queues;
 	TLMParser::TLMParser parser;
+
 	HardwareState::HardwareState hardware;
+	HardwareStub::HardwareStub hardware2;
+
 	CommandExecutor::CommandExecutor executor;
 	Sampler::Sampler sampler;
 	ModulesOperationRequest::ModulesOperationRequest modules_request;

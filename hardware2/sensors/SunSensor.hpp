@@ -12,11 +12,12 @@ using namespace std;
 
 class SunSensor: public ISensor {
 
-public:
+private:
 	int SunExposure;
 
-	int getSample();
-	void setSunExposure(int SunExposure);
+public:
+	int getSample(bool useI2C);
+	void setValue(int val);
 
 	SunSensor();
 	virtual ~SunSensor();

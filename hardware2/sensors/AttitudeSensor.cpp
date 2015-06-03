@@ -7,15 +7,22 @@
 
 #include <hardware2/sensors/AttitudeSensor.hpp>
 
-int AttitudeSensor::getSample(){
-	return this->attitude;
+int AttitudeSensor::getSample(bool useI2C){
+	if (useI2C){
+	// will be implemented using read from i2c
+		return this->attitude;
+		}
+	else {
+		return this->attitude;
+	}
+
 }
 
-void AttitudeSensor::setAttitude(int attitude){
-	this->attitude=attitude;
+void AttitudeSensor::setValue(int val){
+	this->attitude=val;
 }
 
-AttitudeSensor::AttitudeSensor() {
+AttitudeSensor::AttitudeSensor():ISensor("Attitude") {
 	this->attitude=0;
 }
 

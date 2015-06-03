@@ -8,14 +8,20 @@
 #include <hardware2/sensors/SunSensor.hpp>
 
 
-int SunSensor::getSample(){
-	return this->SunExposure;
+int SunSensor::getSample(bool useI2C){
+	if (useI2C){
+	// will be implemented using read from i2c
+		return this->SunExposure;
+		}
+	else {
+		return this->SunExposure;
+	}
 }
 
-void SunSensor::setSunExposure(int SunExposure){
-	this->SunExposure=SunExposure;
+void SunSensor::setValue(int val){
+	this->SunExposure=val;
 }
-SunSensor::SunSensor() {
+SunSensor::SunSensor():ISensor("Exposure") {
    this->SunExposure=0;
 
 }

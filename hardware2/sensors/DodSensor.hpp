@@ -16,12 +16,12 @@ using namespace std;
 //DOD - Depth of Discharge Sensor.
 
 class DodSensor : public ISensor{
-public:
 
+private:
 	int dod;
-
-	int getSample();
-	void setDod(int dod);
+public:
+	int getSample(bool useI2C);
+	void setValue(int val);
 
 	DodSensor();
 	virtual ~DodSensor();

@@ -8,15 +8,21 @@
 #include <hardware2/sensors/TemperatureSensor.hpp>
 using namespace std;
 
-int TemperatureSensor::getSample(){
- return this->temperature;
+int TemperatureSensor::getSample(bool useI2C){
+	if (useI2C){
+		// will be implemented using read from i2c
+			return this->temperature;
+			}
+		else {
+			return this->temperature;
+		}
 }
 
-void TemperatureSensor::setTemperature(int temp){
- this->temperature=temp;
+void TemperatureSensor::setValue(int val){
+ this->temperature=val;
 }
 
-TemperatureSensor::TemperatureSensor() {
+TemperatureSensor::TemperatureSensor():ISensor("Exposure") {
 	this->temperature=0;
 
 }

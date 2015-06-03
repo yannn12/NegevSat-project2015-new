@@ -11,11 +11,13 @@
 using namespace std;
 
 class AttitudeSensor: public ISensor  {
-public:
 
+private:
 	int attitude;
-	int getSample();
-	void setAttitude(int attitude);
+
+public:
+	int getSample(bool useI2C);
+	void setValue(int val);
 
 	AttitudeSensor();
 	virtual ~AttitudeSensor();

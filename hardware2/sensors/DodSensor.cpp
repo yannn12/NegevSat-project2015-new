@@ -9,15 +9,21 @@
 
 using namespace std;
 
-int DodSensor::getSample(){
- return this->dod;
+int DodSensor::getSample(bool useI2C){
+	if (useI2C){
+	// will be implemented using read from i2c
+		return this->dod;
+		}
+	else {
+		return this->dod;
+	}
 }
 
-void DodSensor::setDod(int dod){
- this->dod=dod;
+void DodSensor::setValue(int val){
+ this->dod=val;
 }
 
-DodSensor::DodSensor() {
+DodSensor::DodSensor():ISensor("DepthOfDischarge") {
 	this->dod=0;
 
 }

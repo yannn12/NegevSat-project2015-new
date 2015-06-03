@@ -12,7 +12,21 @@
 #include "sensors/DodSensor.hpp"
 #include "sensors/SunSensor.hpp"
 #include "sensors/TemperatureSensor.hpp"
-using namespace std;
+
+#define HW_ENERGY_MODULE				0
+#define HW_PAYLOAD_MODULE				1
+#define HW_SBAND_MODULE					2
+#define HW_TEMP_MODULE					3
+#define HW_SOLARP_MODULE				4
+#define HW_TERMAL_CTRL_MODULE			5
+
+#define TEMP_COEFFICIENT				5
+#define MIN_PROPER_TEMPERATURE			0
+#define MAX_PROPER_TEMPERATURE			40
+#define MIN_PROPER_VOLTAGE				3
+#define MAX_PROPER_VOLTAGE				5
+#define MIN_PROPER_CURRENT				1
+#define MAX_PROPER_CURRENT				2
 
 class HardwareStub {
 private:
@@ -22,6 +36,11 @@ private:
 	ISensor::ISensor* sunlightSensor;
 
 public:
+	int getStatus(int module);
+	int getValue(int module, bool i2c);
+	string getName(int module);
+	void setValue(int module,int  value);
+	void setStatus(int module,int  status);
 	HardwareStub();
 	virtual ~HardwareStub();
 };

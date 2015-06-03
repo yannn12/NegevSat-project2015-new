@@ -22,3 +22,40 @@ HardwareStub::~HardwareStub() {
 	// TODO Auto-generated destructor stub
 }
 
+int HardwareStub::getStatus(int module){
+	switch (module){
+	case HW_ENERGY_MODULE:
+		return  dodSensor->getStatus();
+	}
+}
+void HardwareStub::setStatus(int module,int  status){
+		switch (module){
+		case HW_ENERGY_MODULE:
+		return dodSensor->setStatus(status);
+
+	}
+}
+void HardwareStub::setValue(int module,int  value){
+		switch (module){
+		case HW_ENERGY_MODULE:
+		return dodSensor->setValue(value);
+
+	}
+}
+
+int HardwareStub::getValue(int module, bool i2c){
+	switch (module){
+	case HW_ENERGY_MODULE:
+		return dodSensor->getSample(i2c);
+	}
+}
+
+string HardwareStub::getName(int module){
+	switch (module){
+	case HW_ENERGY_MODULE:
+		return dodSensor->getName();
+
+	}
+}
+
+
