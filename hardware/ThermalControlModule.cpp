@@ -7,6 +7,7 @@
 
 #include <hardware/ThermalControlModule.hpp>
 
+
 ThermalControlModule::ThermalControlModule() :HWModule("ThermalControl"){
 	// TODO Auto-generated constructor stub
 

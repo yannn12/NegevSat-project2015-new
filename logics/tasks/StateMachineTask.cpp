@@ -288,7 +288,7 @@ void FacingGroundStation::init() {
 void FacingGroundStation::work() {
 	if(flag.getFlag() == true){
 		printf("* Timer Elapsed *\n");
-		setState<Idle>();
+		setState<Safe>();
 		return;
 	}
 	//printf(" * StateMachine TASK:: FacingGroundStation::work *\n");
