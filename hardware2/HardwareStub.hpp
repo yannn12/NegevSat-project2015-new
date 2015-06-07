@@ -19,6 +19,7 @@
 #define HW_TEMP_MODULE					3
 #define HW_SOLARP_MODULE				4
 #define HW_TERMAL_CTRL_MODULE			5
+#define HW_CURRENT_MODULE				6
 
 #define TEMP_COEFFICIENT				5
 #define MIN_PROPER_TEMPERATURE			0
@@ -34,6 +35,7 @@ private:
 	ISensor::ISensor* dodSensor;
 	ISensor::ISensor* attitudeSensor;
 	ISensor::ISensor* sunlightSensor;
+	ISensor::ISensor* currentSensor;
 
 public:
 	int getStatus(int module);
@@ -41,6 +43,7 @@ public:
 	string getName(int module);
 	void setValue(int module,int  value);
 	void setStatus(int module,int  status);
+
 	HardwareStub();
 	virtual ~HardwareStub();
 };

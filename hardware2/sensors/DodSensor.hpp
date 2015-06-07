@@ -19,10 +19,10 @@ class DodSensor : public ISensor{
 
 private:
 	int dod;
+
 public:
 	int getSample(bool useI2C);
 	void setValue(int val);
-
 	DodSensor();
 	virtual ~DodSensor();
 };

@@ -23,6 +23,7 @@ void DodSensor::setValue(int val){
  this->dod=val;
 }
 
+
 DodSensor::DodSensor():ISensor("DepthOfDischarge") {
 	this->dod=0;
 

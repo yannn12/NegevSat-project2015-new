@@ -115,7 +115,10 @@ Sample::Sample* Sampler::createSample(string type, bool i2c, unsigned long long 
 	int value = hardware->getValue(module,i2c);
 	if (!type.compare(ENERGY_STR)){
 		// create energy sample
-		int current = hardware->getEnergyCurrent(i2c);
+
+		//int current = hardware->getEnergyCurrent(i2c); 	#308458272
+		int current = hardware2->getValue(HW_CURRENT_MODULE,false);
+
 		Sample::Sample* energy_sample = new Sample::Sample(ENERGY_SAMPLE_STR, time_str);
 		map<string,string> energy_measure;
 		string energy_str = "";
@@ -139,10 +142,22 @@ Sample::Sample* Sampler::createSample(string type, bool i2c, unsigned long long 
 	}
 	else if (!type.compare(STATIC_STR)){
 		// create static sample
-		int status = hardware->getStatus(module);
+		//int status = hardware->getStatus(module); #308458272  - i have insert 7 next lines
+		int status;
+		if(module==HW_CURRENT_MODULE||module==HW_ENERGY_MODULE){
+			status = hardware2->getStatus(module);
+		}
+		else{
+			status = hardware->getStatus(module);
+		}
+
+
 		Sample::Sample* sample = new Sample::Sample(MODULE_STR, time_str);
 		map<string,string> measure;
-		measure.insert(pair<string,string>(NAME_STR, hardware->getName(module)));
+
+		//measure.insert(pair<string,string>(NAME_STR, hardware->getName(module)));
+		measure.insert(pair<string,string>(NAME_STR, hardware2->getName(module)));
+
 		measure.insert(pair<string,string>(STATUS_STR, module_state_to_chars(status)));
 		sample->addMeasure(INFO_STR, measure);
 		return sample;
@@ -156,8 +171,12 @@ Sample::Sample* Sampler::createSample(string type, bool i2c, unsigned long long 
 }
 
 void Sampler::createEnergySample(BattaryInfo& battary) {
-	battary.current = hardware->getEnergyCurrent(true);;
-	battary.voltage = hardware->getValue(HW_ENERGY_MODULE,true);;
+	//battary.current = hardware->getEnergyCurrent(true);	#308458272
+	battary.current = hardware2->getValue(HW_CURRENT_MODULE,true);
+
+	//battary.voltage = hardware->getValue(HW_ENERGY_MODULE,true);	#308458272
+	battary.voltage = hardware2->getValue(HW_ENERGY_MODULE,true);
+
 	battary.time = time_to_long();
 
 }

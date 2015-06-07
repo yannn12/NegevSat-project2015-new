@@ -27,6 +27,7 @@ LifeCycleTask::LifeCycleTask(WorkQueue::WorkQueue* _rdy_works, SendReceiveQueue:
 	state = INIT_STATE;
 	executor.setModulesRequest(&modules_request);
 	sampler.setHardware(&hardware);
+	sampler.setHardware2(&hardware2);
 	enePacket = 0;
 	statPacket = 0;
 	tempsPacket = 0;
@@ -44,11 +45,13 @@ void LifeCycleTask::control_command(){
 	if (state == SAFE_STATE){
 		printf(" * LifeCycle TASK:: control_command - SUN POINTING *\n");
 		// simulating charging the batter here when pointing the sun
-		int voltage = hardware.getEnergy(false);
+		//int voltage = hardware.getEnergy(false);    #308458272
+		int voltage = hardware2.getValue(HW_ENERGY_MODULE,false);
 		if (voltage < MAX_PROPER_VOLTAGE){
 			voltage++;
 			printf(" * LifeCycle TASK:: control_command - CHARGING BATTERY %d V *\n", voltage);
-			hardware.setEnergy(voltage);
+			//hardware.setEnergy(voltage); #308458272
+			hardware2.setValue(HW_ENERGY_MODULE,voltage);
 		}
 	}
 	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE){
@@ -113,11 +116,11 @@ void LifeCycleTask::control_unit_samples(){
 
 	//StatusPacket* statusPacket= PacketFactory::factory->createStatusPacket();
 	rtems_clock_get_tod( &current_time);
-	BattaryInfo battary;
+	BattaryInfo battary;															//$$$$
 	TempSample tempSample;
 	ComponentInfo compInfo;
 
-	sampler.createEnergySample(battary);
+	sampler.createEnergySample(battary);													//$$$$
 	enePacket->getSamples().push_back(battary);
 	sampler.createTempSample(tempSample);
 	tempsPacket->getTempSamples().push_back(tempSample);
@@ -127,7 +130,7 @@ void LifeCycleTask::control_unit_samples(){
 	statPacket->getComponentsInfo().push_back(compInfo);
 	sampler.createStatusSample(compInfo,Component::Temperature);
 	statPacket->getComponentsInfo().push_back(compInfo);
-	sampler.createStatusSample(compInfo,Component::Energy);
+	sampler.createStatusSample(compInfo,Component::Energy);								//$$$$
 	statPacket->getComponentsInfo().push_back(compInfo);
 	sampler.createStatusSample(compInfo,Component::SolarPanels);
 	statPacket->getComponentsInfo().push_back(compInfo);
@@ -218,11 +221,13 @@ void LifeCycleTask::logics(){
 	//printf(" * LifeCycle TASK:: logics *\n");
 	rtemsEvent event;
 	rtems_event_set out;
-	if (hardware.getEnergyStatus() == MODULE_MALFUNCTION){
+	//if (hardware.getEnergyStatus() == MODULE_MALFUNCTION){ 	#308458272
+	if (hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_MALFUNCTION){
 		out = MOVE_TO_SAFE_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
-	if (state == SAFE_STATE && hardware.getEnergyStatus() == MODULE_ON){
+	//if (state == SAFE_STATE && hardware.getEnergyStatus() == MODULE_ON){ #308458272
+	if (state == SAFE_STATE && hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_ON){
 		out = MOVE_TO_OP_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
@@ -237,21 +242,40 @@ void LifeCycleTask::perform_cmd(){
 
 void LifeCycleTask::monitoring(){
 	//printf(" * LifeCycle TASK:: monitoring *\n");
-	int voltage = hardware.getEnergy(false);
-	int current = hardware.getEnergyCurrent(false);
+
+	//int voltage = hardware.getEnergy(false); #308458272
+	//int current = hardware.getEnergyCurrent(false); #308458272
+	int voltage =  hardware2.getValue(HW_ENERGY_MODULE,false);
+	int current = hardware2.getValue(HW_CURRENT_MODULE,false);
+
 	int temp = hardware.getTemperature(false);
 
 	//TODO check the condition of the samples (energy,temp and so on) and if the value is wrong
 	//change something in order to invoke the right handling in the logics stage
-	if (voltage < MIN_PROPER_VOLTAGE || current < MIN_PROPER_CURRENT){
+
+	/*if (voltage < MIN_PROPER_VOLTAGE || current < MIN_PROPER_CURRENT){ #308458272 i have wrote the 2 next "if"
 		hardware.setEnergyStatus(MODULE_MALFUNCTION);
+	}*/
+	if (voltage < MIN_PROPER_VOLTAGE){
+			hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MALFUNCTION);
 	}
+	if (current < MIN_PROPER_CURRENT){
+			hardware2.setStatus(HW_ENERGY_MODULE,HW_CURRENT_MODULE);
+	}
+
+
 	if (temp > MAX_PROPER_TEMPERATURE){
 		hardware.setTemperatureStatus(MODULE_MALFUNCTION);
 	}
+
+
+	/*if (voltage >= MIN_PROPER_VOLTAGE){
+		hardware.setEnergyStatus(MODULE_ON); #308458272
+	}*/
 	if (voltage >= MIN_PROPER_VOLTAGE){
-		hardware.setEnergyStatus(MODULE_ON);
+		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_ON);
 	}
+
 	if (temp <= MAX_PROPER_TEMPERATURE){
 		hardware.setTemperatureStatus(MODULE_ON);
 	}
@@ -319,7 +343,10 @@ void LifeCycleTask::module_ctrl(){
 		modules_request.request_connected(NO_CHANGE);
 	}
 	if (modules_request.get_request_set_energy() == TURN_ON){
-		hardware.setEnergy(low_en);
+
+	//	hardware.setEnergy(low_en);   #308458272
+		hardware2.setValue(HW_ENERGY_MODULE,low_en);
+
 		modules_request.request_set_energy(NO_CHANGE);
 	}
 	if (modules_request.get_request_set_temp() == TURN_ON){
