@@ -218,6 +218,9 @@ void Idle::work(){
 		if (set & START_EXPIRIMENT_EVENT){
 			setState<RegularOperations>();
 		}
+		else if (set & MOVE_TO_SAFE_EVENT){
+			setState<Safe>();
+		}
 		else if (set & RECEIVED_COMMUNICATION_EVENT){
 			setState<FacingGroundStation>();
 		}
@@ -324,11 +327,6 @@ void Safe::init() {
 void Safe::work() {
 	//printf(" * StateMachine TASK:: FacingGroundStation::work *\n");
 
-	//todo cancel
-	printf(" * The System Is OK Exiting Safe *\n");
-	setState<Operational>();
-	return;
-
 	rtems_event_set set = TOP::box().receive_event();
 	if (set != NO_EVENT_RECEIVED){
 		if (set & MOVE_TO_OP_EVENT){
@@ -340,7 +338,7 @@ void Safe::work() {
 	}
 	if (TOP::box().increase_counter()){
 		for (int i=0; i < NUMBER_OF_ACTIVE_TASKS; i++){
-			TOP::box().send_event(REGULAR_OPS_STATE_EVENT, i);
+			TOP::box().send_event(SAFE_STATE_EVENT, i);
 		}
 	}
 }

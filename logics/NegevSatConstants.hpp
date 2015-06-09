@@ -33,6 +33,7 @@
 #define SAFE_STATE				2
 #define REGULAR_OPS_STATE		3
 #define FACING_GROUND_STATE		4
+#define IDLE_STATE				5
 
 // satellite states events - these events are relevant to all tasks and should not be overwritten
 // e.g when state machine moves to another state, it sends those events to all tasks to inform the new state
@@ -70,6 +71,9 @@ static const char FACING_GROUND_STATE_STR[] = "OPERATIONAL_STATE";
 #define MODULE_MALFUNCTION		1
 #define MODULE_NON_OPERATIONAL	2
 #define MODULE_STANDBY			3
+//YANIV HOD
+#define MODULE_MID_MALFUNCTION	4
+#define MODULE_OK	5
 
 //satellite modules states as chars
 static const char MODULE_ON_STR[] = "ON";

@@ -23,7 +23,7 @@ void AttitudeSensor::setValue(int val){
 }
 
 AttitudeSensor::AttitudeSensor():ISensor("Attitude") {
-	this->attitude=0;
+	this->attitude=5;
 }
 
 AttitudeSensor::~AttitudeSensor() {

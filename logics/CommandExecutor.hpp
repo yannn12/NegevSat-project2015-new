@@ -22,6 +22,7 @@ public:
 	virtual ~CommandExecutor();
 	void execute(WorkDescription::WorkDescription work);
 	void setModulesRequest(ModulesOperationRequest::ModulesOperationRequest* _modules_request);
+
 };
 
 #endif /* COMMANDEXECUTOR_HPP_ */

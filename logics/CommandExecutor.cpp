@@ -11,6 +11,7 @@
 #include "logics/tasks/SendTask.hpp"
 
 
+
 CommandExecutor::CommandExecutor() {
 }
 
@@ -106,6 +107,7 @@ void CommandExecutor::execute(WorkDescription::WorkDescription work){
 		printf(" * LifeCycle TASK::CommandExecutor: setting energy to low energy! *\n");
 		modules_request->request_set_energy(TURN_ON);
 		break;
+
 	case CONNECTED:
 		printf(" * LifeCycle TASK::CommandExecutor: connecting to ground! *\n");
 		modules_request->request_connected(TURN_ON);
@@ -117,14 +119,23 @@ void CommandExecutor::execute(WorkDescription::WorkDescription work){
 
 	//new commands
 	case PASS:
-		printf(" * LifeCycle TASK::CommandExecutor: start experiment *\n");
+		printf(" * LifeCycle TASK::CommandExecutor: PASS Command *\n");
 		out = RECEIVED_COMMUNICATION_EVENT;
 		status = send_event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 		break;
 	case START_EXPERIMENT:
-		printf(" * LifeCycle TASK::CommandExecutor: start experiment *\n");
+		printf(" * LifeCycle TASK::CommandExecutor: START_EXPERIMENT Command *\n");
 		out = START_EXPIRIMENT_EVENT;
 		status = send_event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+		break;
+	case SET_ENERGY_NEW:
+		printf(" * LifeCycle TASK::CommandExecutor: SET_ENERGY_NEW Command *\n");
+		modules_request->request_set_energy_new(TURN_ON);
+		break;
+
+	case SET_SPINRATE_NEW:
+		printf(" * LifeCycle TASK::CommandExecutor: SET_SPINRATE_NEW Command *\n");
+		modules_request->request_set_attitude_new(TURN_ON);
 		break;
 	default:
 		printf(" * LifeCycle TASK::CommandExecutor: Illegal command in work! *\n");

@@ -20,6 +20,9 @@ using namespace timeutils;
 using namespace std;
 using namespace stringutils;
 
+static int energy_value=45;
+static int spinrate_value=15;
+
 LifeCycleTask::LifeCycleTask(WorkQueue::WorkQueue* _rdy_works, SendReceiveQueue::SendReceiveQueue** _send_queues) {
 	this->hardware.SetHardware2(&hardware2);  //#308458272
 	rdy_works = _rdy_works;
@@ -47,13 +50,25 @@ void LifeCycleTask::control_command(){
 		printf(" * LifeCycle TASK:: control_command - SUN POINTING *\n");
 		// simulating charging the batter here when pointing the sun
 		//int voltage = hardware.getEnergy(false);    #308458272
-		int voltage = hardware2.getValue(HW_ENERGY_MODULE,false);
-		if (voltage < MAX_PROPER_VOLTAGE){
-			voltage++;
-			printf(" * LifeCycle TASK:: control_command - CHARGING BATTERY %d V *\n", voltage);
+		int dod = hardware2.getValue(HW_ENERGY_MODULE,false);
+
+		if (dod > MAX_DOD_FOR_EXITING_SAFE){
+			dod--;
+			printf(" * LifeCycle TASK:: control_command - CHARGING BATTERY DOD to  %d  *\n", dod);
 			//hardware.setEnergy(voltage); #308458272
-			hardware2.setValue(HW_ENERGY_MODULE,voltage);
+			hardware2.setValue(HW_ENERGY_MODULE,dod);
 		}
+		int attitude = hardware2.getValue(HW_ATTITUDE_MODULE,false);
+		if (attitude > MIN_ATTITUDE_ENTERING_SAFE){
+			attitude--;
+			printf(" * LifeCycle TASK:: control_command - FIXING SPINRATE to %d  *\n", attitude);
+		}
+		else if(attitude<MAX_ATTITUDE_ENTERING_SAFE){
+			attitude++;
+			printf(" * LifeCycle TASK:: control_command - FIXING SPINRATE to %d  *\n", attitude);
+		}
+		hardware2.setValue(HW_ATTITUDE_MODULE,attitude);
+
 	}
 	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE){
 		//printf(" * LifeCycle TASK:: control_command - EARTH POINTING *\n");
@@ -89,6 +104,9 @@ void LifeCycleTask::obtain_state(){
 		}
 		if (out & REGULAR_OPS_STATE_EVENT){
 			state = REGULAR_OPS_STATE;
+		}
+		if (out & IDLE_STATE_EVENT){
+			state = IDLE_STATE;
 		}
 		if (out & FACING_GROUND_STATE_EVENT){
 			printf(" * LifeCycle TASK:: FACING GROUND! *\n");
@@ -223,12 +241,16 @@ void LifeCycleTask::logics(){
 	rtemsEvent event;
 	rtems_event_set out;
 	//if (hardware.getEnergyStatus() == MODULE_MALFUNCTION){ 	#308458272
-	if (hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_MALFUNCTION){
+	if (hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_MALFUNCTION && state!= SAFE_STATE ){
+		out = MOVE_TO_SAFE_EVENT;
+		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+	}
+	if (hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_MALFUNCTION && state!= SAFE_STATE){
 		out = MOVE_TO_SAFE_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
 	//if (state == SAFE_STATE && hardware.getEnergyStatus() == MODULE_ON){ #308458272
-	if (state == SAFE_STATE && hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_ON){
+	if (state == SAFE_STATE && hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_OK&& hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_OK){
 		out = MOVE_TO_OP_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
@@ -246,8 +268,9 @@ void LifeCycleTask::monitoring(){
 
 	//int voltage = hardware.getEnergy(false); #308458272
 	//int current = hardware.getEnergyCurrent(false); #308458272
-	int voltage =  hardware2.getValue(HW_ENERGY_MODULE,false);
+	int dod =  hardware2.getValue(HW_ENERGY_MODULE,false);
 	int current = hardware2.getValue(HW_CURRENT_MODULE,false);
+	int attitude =hardware2.getValue(HW_ATTITUDE_MODULE,false);
 
 	int temp = hardware.getTemperature(false);
 
@@ -257,11 +280,27 @@ void LifeCycleTask::monitoring(){
 	/*if (voltage < MIN_PROPER_VOLTAGE || current < MIN_PROPER_CURRENT){ #308458272 i have wrote the 2 next "if"
 		hardware.setEnergyStatus(MODULE_MALFUNCTION);
 	}*/
-	if (voltage < MIN_PROPER_VOLTAGE){
+	if (dod > MIN_DOD_FOR_ENTERING_SAFE){
 			hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MALFUNCTION);
 	}
+	else if (dod> MAX_DOD_FOR_EXITING_SAFE && dod <= MIN_DOD_FOR_ENTERING_SAFE){
+				hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MID_MALFUNCTION);
+	}
+	else {
+		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_OK);
+	}
+
+	if(attitude >= MAX_ATTITUDE_ENTERING_SAFE && attitude <= MIN_ATTITUDE_ENTERING_SAFE){
+		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_OK);
+	}
+	else{
+		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_MALFUNCTION);
+	}
+}
+
+	/* YANIV HOD
 	if (current < MIN_PROPER_CURRENT){
-			hardware2.setStatus(HW_ENERGY_MODULE,HW_CURRENT_MODULE);
+			hardware2.setStatus(HW_CURRENT_MODULE,HW_CURRENT_MODULE);
 	}
 
 
@@ -272,15 +311,15 @@ void LifeCycleTask::monitoring(){
 
 	/*if (voltage >= MIN_PROPER_VOLTAGE){
 		hardware.setEnergyStatus(MODULE_ON); #308458272
-	}*/
-	if (voltage >= MIN_PROPER_VOLTAGE){
+	}
+	if (dod >= MIN_PROPER_VOLTAGE){
 		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_ON);
 	}
 
 	if (temp <= MAX_PROPER_TEMPERATURE){
 		hardware.setTemperatureStatus(MODULE_ON);
-	}
-}
+	}*/
+
 
 void LifeCycleTask::module_ctrl(){
 
@@ -347,12 +386,26 @@ void LifeCycleTask::module_ctrl(){
 
 	//	hardware.setEnergy(low_en);   #308458272
 		hardware2.setValue(HW_ENERGY_MODULE,low_en);
-
 		modules_request.request_set_energy(NO_CHANGE);
 	}
+
+	if (modules_request.get_request_set_energy_new() == TURN_ON){
+
+		//	hardware.setEnergy(low_en);   #308458272
+			hardware2.setValue(HW_ENERGY_MODULE,energy_value);
+			modules_request.request_set_energy_new(NO_CHANGE);
+	}
+
 	if (modules_request.get_request_set_temp() == TURN_ON){
 		hardware.setTemperature(high_temp);
 		modules_request.request_set_temp(NO_CHANGE);
+	}
+
+	if (modules_request.get_attitude_new_request() == TURN_ON){
+
+		//	hardware.setEnergy(low_en);   #308458272
+			hardware2.setValue(HW_ATTITUDE_MODULE,spinrate_value);
+			modules_request.request_set_attitude_new(NO_CHANGE);
 	}
 }
 
@@ -381,7 +434,7 @@ void LifeCycleTask::body(rtems_task_argument argument){
 		attitude_control(count); // collect samples and send packets
 		logics(); 					//change stat if has problem
 		perform_cmd();				//get command and execute (input)
-		monitoring();				// check moduls stats and tell manufactions
+		monitoring();				// check moduls stats and tell manufactions(change sensors status)
 		module_ctrl(); 				// turn on or off modules
 		thermal_ctrl();				//fix problem with temature
 		count++; // this counter can be removed/modified - used to delay to samples rate (1/3 rounds)

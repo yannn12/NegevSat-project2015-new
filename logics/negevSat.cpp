@@ -94,7 +94,7 @@ rtems_task Init(rtems_task_argument )
 {
 	set_time();
 
-	PacketFactory::factory = new XmlPacketFactory();
+	PacketFactory::factory = new BinPacketFactory();
 
 	if(tests){
 		//AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
@@ -159,9 +159,9 @@ rtems_task Init(rtems_task_argument )
 	task_table[LIFE_CYCLE_TASK_INDEX] = &life_cycle_task;
 	task_table[STATE_MACHINE_TASK_INDEX] = &state_machine_task;
 
-	printf("INIT - Destroy it's self\n");
+	//printf("INIT - Destroy it's self\n");
 	rtems_status_code status  = rtems_task_delete( RTEMS_SELF );
-	printf("rtems returned with %d\n", status);
+	//printf("rtems returned with %d\n", status);
 	exit(1);
 }
 

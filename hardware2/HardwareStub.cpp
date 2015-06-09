@@ -29,25 +29,33 @@ int HardwareStub::getStatus(int module){
 	case HW_ENERGY_MODULE:
 		return  dodSensor->getStatus();
 	case HW_CURRENT_MODULE:
-			return  currentSensor->getStatus();
+		return  currentSensor->getStatus();
+	case HW_ATTITUDE_MODULE:
+		return attitudeSensor->getStatus();
 	}
 }
 
 void HardwareStub::setStatus(int module,int  status){
-		switch (module){
-		case HW_ENERGY_MODULE:
-			return dodSensor->setStatus(status);
-		case HW_CURRENT_MODULE:
-			return  currentSensor->setStatus(status);
+	switch (module){
+	case HW_ENERGY_MODULE:
+		return dodSensor->setStatus(status);
+	case HW_CURRENT_MODULE:
+		return  currentSensor->setStatus(status);
+	case HW_ATTITUDE_MODULE:
+		return attitudeSensor->setStatus(status);
 	}
+
 }
 void HardwareStub::setValue(int module,int  value){
-		switch (module){
-		case HW_ENERGY_MODULE:
-			return dodSensor->setValue(value);
-		case HW_CURRENT_MODULE:
-			return  currentSensor->setValue(value);
+	switch (module){
+	case HW_ENERGY_MODULE:
+		return dodSensor->setValue(value);
+	case HW_CURRENT_MODULE:
+		return  currentSensor->setValue(value);
+	case HW_ATTITUDE_MODULE:
+		return attitudeSensor->setValue(value);
 	}
+
 }
 
 int HardwareStub::getValue(int module, bool i2c){
@@ -56,6 +64,9 @@ int HardwareStub::getValue(int module, bool i2c){
 		return dodSensor->getSample(i2c);
 	case HW_CURRENT_MODULE:
 		return  currentSensor->getSample(i2c);
+
+	case HW_ATTITUDE_MODULE:
+		return attitudeSensor->getSample(i2c);
 	}
 
 }
@@ -67,6 +78,9 @@ string HardwareStub::getName(int module){
 	case HW_CURRENT_MODULE:
 		return  currentSensor->getName();
 
+
+	case HW_ATTITUDE_MODULE:
+		return attitudeSensor->getName();
 	}
 }
 

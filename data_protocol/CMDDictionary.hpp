@@ -26,9 +26,9 @@
 
 //new commands
 #define PASS					14
-#define SET_ENERGY				15 // priority = energy value
-#define SET_BATTARY				16 // priority = battary value
-#define SET_SPINRATE			17 // priority = spinrate value
+#define SET_ENERGY_NEW			15 // priority = energy value
+#define SET_BATTARY_NEW			16 // priority = battary value
+#define SET_SPINRATE_NEW			17 // priority = spinrate value
 #define START_EXPERIMENT		18
 
 

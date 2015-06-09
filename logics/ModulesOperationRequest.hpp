@@ -22,7 +22,10 @@ private:
 	// XXX SIMULATOR FIELDS XXX
 	int set_temp_request;
 	int set_energy_request;
+	int set_energy_new_request;
 	int connected_request;
+
+	int set_attitude_new_request;
 
 public:
 	ModulesOperationRequest(){
@@ -32,7 +35,9 @@ public:
 
 		set_temp_request = NO_CHANGE;
 		set_energy_request = NO_CHANGE;
+		set_energy_new_request=NO_CHANGE;
 		connected_request = NO_CHANGE;
+		set_attitude_new_request = NO_CHANGE;
 	}
 
 	void request_payload(int action){
@@ -81,9 +86,25 @@ public:
 		set_energy_request = action;
 	}
 
+	void request_set_energy_new(int action){
+		set_energy_new_request = action;
+	}
+
+	void request_set_attitude_new(int action){
+		set_attitude_new_request = action;
+	}
+
 	int get_request_set_energy(){
 		return set_energy_request;
 	}
+
+	int get_request_set_energy_new(){
+		return	set_energy_new_request;
+	}
+	int get_attitude_new_request(){
+		return	set_attitude_new_request;
+	}
+
 	virtual ~ModulesOperationRequest();
 };
 

@@ -24,7 +24,7 @@ void DodSensor::setValue(int val){
 }
 
 
-DodSensor::DodSensor():ISensor("DepthOfDischarge") {
+DodSensor::DodSensor():ISensor("Energy") {
 	this->dod=0;
 
 }
