@@ -47,8 +47,6 @@ LifeCycleTask::~LifeCycleTask() {
 void LifeCycleTask::control_command(){
 	//printf(" * LifeCycle TASK:: control_command *\n");
 	if (state == SAFE_STATE){
-
-
 		//int voltage = hardware.getEnergy(false);    #308458272
 		int dod = hardware2.getValue(HW_ENERGY_MODULE,false);
 		if (dod > MAX_DOD_FOR_EXITING_SAFE){
@@ -71,7 +69,23 @@ void LifeCycleTask::control_command(){
 		}
 		hardware2.setValue(HW_ATTITUDE_MODULE,attitude);
 
+
+		int temperature = hardware2.getValue(HW_TEMP_MODULE,false);
+		if (temperature > MAX_PROPER_TEMPERATURE){
+			hardware2.thermalControl->StartCooling();
+			hardware2.thermalControl->StopHeating();
+		}
+		else if (temperature < MIN_PROPER_TEMPERATURE){
+			hardware2.thermalControl->StartHeating();
+			hardware2.thermalControl->StopCooling();
+		}
+		else{
+			hardware2.thermalControl->StopCooling();
+			hardware2.thermalControl->StopHeating();
+		}
+
 	}
+	hardware2.thermalControl->WorkCycle();
 	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE){
 		//printf(" * LifeCycle TASK:: control_command - EARTH POINTING *\n");
 	}
@@ -442,7 +456,7 @@ void LifeCycleTask::module_ctrl(){
 }
 
 void LifeCycleTask::thermal_ctrl(){
-	//printf(" * LifeCycle TASK:: thermal ctrl *\n");
+	/*//printf(" * LifeCycle TASK:: thermal ctrl *\n");
 	//if (hardware.getTemperatureStatus() == MODULE_MALFUNCTION){ #308458272
 	if (hardware2.getStatus(HW_TEMP_MODULE)== MODULE_MALFUNCTION){
 		printf(" * LifeCycle TASK:: thermal ctrl - module malfunction *\n");
@@ -460,7 +474,7 @@ void LifeCycleTask::thermal_ctrl(){
 	//else if (hardware.getTemperatureStatus() == MODULE_ON){ #308458272
 	else if (hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
 		hardware.setThermalControlStatus(MODULE_STANDBY);
-	}
+	}*/
 }
 
 void LifeCycleTask::body(rtems_task_argument argument){

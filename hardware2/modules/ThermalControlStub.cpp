@@ -16,34 +16,42 @@ ThermalControlStub::ThermalControlStub(HardwareStub* hardware) {
 }
 
 void ThermalControlStub::StartCooling() {
-	printf("ThermalControl Module - Start Cooling");
-	this->isCooling = true;
+	if(!this->isCooling){
+		printf("ThermalControl Module - Start Cooling\n");
+		this->isCooling = true;
+	}
 }
 
 void ThermalControlStub::StopCooling() {
-	printf("ThermalControl Module - Stop Cooling");
-	this->isCooling = false;
+	if(this->isCooling){
+		printf("ThermalControl Module - Stop Cooling\n");
+		this->isCooling = false;
+	}
 }
 
 void ThermalControlStub::StartHeating() {
-	printf("ThermalControl Module - Start Heating");
-	this->isHeating = true;
+	if(!this->isHeating){
+		printf("ThermalControl Module - Start Heating\n");
+		this->isHeating = true;
+	}
 }
 
 void ThermalControlStub::StopHeating() {
-	printf("ThermalControl Module - Stop Heating");
-	this->isHeating = false;
+	if(this->isHeating){
+		printf("ThermalControl Module - Stop Heating\n");
+		this->isHeating = false;
+	}
 }
 
 void ThermalControlStub::WorkCycle() {
 	int temp = this->hardware->temperatureSensor->getSample(false);
 	if(this->isCooling){
 		temp--;
-		printf("ThermalControl Module - Cooling Effect Tempature is %d",temp);
+		printf("ThermalControl Module - Cooling Effect Tempature is %d\n",temp);
 	}
 	if(this->isHeating){
 		temp++;
-		printf("ThermalControl Module - Heating Effect Tempature is %d",temp);
+		printf("ThermalControl Module - Heating Effect Tempature is %d\n",temp);
 	}
 	this->hardware->temperatureSensor->setValue(temp);
 
