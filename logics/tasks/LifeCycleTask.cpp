@@ -47,19 +47,21 @@ LifeCycleTask::~LifeCycleTask() {
 void LifeCycleTask::control_command(){
 	//printf(" * LifeCycle TASK:: control_command *\n");
 	if (state == SAFE_STATE){
-		printf(" * LifeCycle TASK:: control_command - SUN POINTING *\n");
-		// simulating charging the batter here when pointing the sun
+
+
 		//int voltage = hardware.getEnergy(false);    #308458272
 		int dod = hardware2.getValue(HW_ENERGY_MODULE,false);
-
 		if (dod > MAX_DOD_FOR_EXITING_SAFE){
 			dod--;
 			printf(" * LifeCycle TASK:: control_command - CHARGING BATTERY DOD to  %d  *\n", dod);
 			//hardware.setEnergy(voltage); #308458272
 			hardware2.setValue(HW_ENERGY_MODULE,dod);
 		}
+
+
 		int attitude = hardware2.getValue(HW_ATTITUDE_MODULE,false);
 		if (attitude > MIN_ATTITUDE_ENTERING_SAFE){
+			printf(" * LifeCycle TASK:: control_command - SUN POINTING *\n");
 			attitude--;
 			printf(" * LifeCycle TASK:: control_command - FIXING SPINRATE to %d  *\n", attitude);
 		}
@@ -249,8 +251,15 @@ void LifeCycleTask::logics(){
 		out = MOVE_TO_SAFE_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
+	if (hardware2.getStatus(HW_TEMP_MODULE) == MODULE_MALFUNCTION && state!= SAFE_STATE){
+			out = MOVE_TO_SAFE_EVENT;
+			event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
+	}
 	//if (state == SAFE_STATE && hardware.getEnergyStatus() == MODULE_ON){ #308458272
-	if (state == SAFE_STATE && hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_OK&& hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_OK){
+	if (state == SAFE_STATE &&
+			hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_OK&&
+			hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_OK&&
+			hardware2.getStatus(HW_TEMP_MODULE) == MODULE_OK){
 		out = MOVE_TO_OP_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
@@ -272,10 +281,13 @@ void LifeCycleTask::monitoring(){
 	int current = hardware2.getValue(HW_CURRENT_MODULE,false);
 	int attitude =hardware2.getValue(HW_ATTITUDE_MODULE,false);
 
-	int temp = hardware.getTemperature(false);
-
+	//int temp = hardware.getTemperature(false);#308458272
+	int temp = hardware2.getValue(HW_TEMP_MODULE,false);
 	//TODO check the condition of the samples (energy,temp and so on) and if the value is wrong
 	//change something in order to invoke the right handling in the logics stage
+
+
+	// dod monitoring:   ----------------------------
 
 	/*if (voltage < MIN_PROPER_VOLTAGE || current < MIN_PROPER_CURRENT){ #308458272 i have wrote the 2 next "if"
 		hardware.setEnergyStatus(MODULE_MALFUNCTION);
@@ -290,11 +302,30 @@ void LifeCycleTask::monitoring(){
 		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_OK);
 	}
 
+
+	// attitude monitoring: ----------------------------
+
 	if(attitude >= MAX_ATTITUDE_ENTERING_SAFE && attitude <= MIN_ATTITUDE_ENTERING_SAFE){
 		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_OK);
 	}
 	else{
 		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_MALFUNCTION);
+	}
+
+
+	// TEMPERATURE monitoring: ----------------------------
+
+	/*if (temp > MAX_PROPER_TEMPERATURE){
+		hardware.setTemperatureStatus(MODULE_MALFUNCTION); 	#308458272
+	}*/
+	if (temp > MAX_PROPER_TEMPERATURE){
+			hardware2.setStatus(HW_TEMP_MODULE,MODULE_MALFUNCTION);
+	}
+	/*if (temp <= MAX_PROPER_TEMPERATURE){
+			hardware.setTemperatureStatus(MODULE_ON); #308458272
+	}*/
+	if (temp <= MAX_PROPER_TEMPERATURE){
+		hardware2.setStatus(HW_TEMP_MODULE,MODULE_OK);
 	}
 }
 
@@ -304,9 +335,6 @@ void LifeCycleTask::monitoring(){
 	}
 
 
-	if (temp > MAX_PROPER_TEMPERATURE){
-		hardware.setTemperatureStatus(MODULE_MALFUNCTION);
-	}
 
 
 	/*if (voltage >= MIN_PROPER_VOLTAGE){
@@ -316,9 +344,8 @@ void LifeCycleTask::monitoring(){
 		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_ON);
 	}
 
-	if (temp <= MAX_PROPER_TEMPERATURE){
-		hardware.setTemperatureStatus(MODULE_ON);
-	}*/
+
+	*/
 
 
 void LifeCycleTask::module_ctrl(){
@@ -333,7 +360,8 @@ void LifeCycleTask::module_ctrl(){
 
 	if(modules_request.get_payload_request() == TURN_ON
 			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE)
-			&& hardware.getTemperatureStatus() == MODULE_ON){
+	//		&& hardware.getTemperatureStatus() == MODULE_ON){ #308458272
+			&& hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
 		hardware.setPayloadStatus(MODULE_ON);
 		modules_request.request_payload(NO_CHANGE);
 	}
@@ -345,7 +373,8 @@ void LifeCycleTask::module_ctrl(){
 
 	if(modules_request.get_sband_request() == TURN_ON
 			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE)
-			&& hardware.getTemperatureStatus() == MODULE_ON){
+			//&& hardware.getTemperatureStatus() == MODULE_ON){	#308458272
+			&& hardware2.getStatus(HW_TEMP_MODULE)== MODULE_ON){
 		hardware.setSbandStatus(MODULE_ON);
 		modules_request.request_sband(NO_CHANGE);
 	}
@@ -364,6 +393,7 @@ void LifeCycleTask::module_ctrl(){
 		hardware.setThermalControlStatus(MODULE_STANDBY);
 		modules_request.request_thermal_ctrl(NO_CHANGE);
 	}
+
 
 	// XXX SIMULATOR FIELDS XXX
 	rtemsEvent event;
@@ -397,7 +427,9 @@ void LifeCycleTask::module_ctrl(){
 	}
 
 	if (modules_request.get_request_set_temp() == TURN_ON){
-		hardware.setTemperature(high_temp);
+
+		//hardware.setTemperature(high_temp);  #308458272
+		hardware2.setValue(HW_TEMP_MODULE,high_temp);
 		modules_request.request_set_temp(NO_CHANGE);
 	}
 
@@ -411,15 +443,22 @@ void LifeCycleTask::module_ctrl(){
 
 void LifeCycleTask::thermal_ctrl(){
 	//printf(" * LifeCycle TASK:: thermal ctrl *\n");
-	if (hardware.getTemperatureStatus() == MODULE_MALFUNCTION){
+	//if (hardware.getTemperatureStatus() == MODULE_MALFUNCTION){ #308458272
+	if (hardware2.getStatus(HW_TEMP_MODULE)== MODULE_MALFUNCTION){
 		printf(" * LifeCycle TASK:: thermal ctrl - module malfunction *\n");
 		hardware.setThermalControlStatus(MODULE_ON);
-		int temp = hardware.getTemperature(false);
+
+
+		//int temp = hardware.getTemperature(false); #308458272
+		int temp = hardware2.getValue(HW_TEMP_MODULE,false);
 		temp--;
-		hardware.setTemperature(temp);
+		//hardware.setTemperature(temp); #308458272
+		hardware2.setValue(HW_TEMP_MODULE,temp);
 		printf(" * LifeCycle TASK:: thermal ctrl - temp is now: %d *\n", temp);
+
 	}
-	else if (hardware.getTemperatureStatus() == MODULE_ON){
+	//else if (hardware.getTemperatureStatus() == MODULE_ON){ #308458272
+	else if (hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
 		hardware.setThermalControlStatus(MODULE_STANDBY);
 	}
 }
