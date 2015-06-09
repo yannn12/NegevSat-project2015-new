@@ -14,7 +14,7 @@ class Antenna {
 
 public:
 	void Open();
-	void Colse();
+	void Close();
 	void TurnOn();
 	void TurnOff();
 	Antenna();

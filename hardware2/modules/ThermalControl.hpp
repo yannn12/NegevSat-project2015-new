@@ -11,12 +11,15 @@
 class ThermalControl {
 	// TODO
 public:
-	void StartCooling();
-	void StopCooling();
-	void StartHeating();
-	void StopHeating();
+	virtual void StartCooling();
+	virtual void StopCooling();
+	virtual void StartHeating();
+	virtual void StopHeating();
+
+	virtual void WorkCycle(){}
 	ThermalControl();
 	virtual ~ThermalControl();
+
 };
 
 #endif /* THERMALCONTROL_HPP_ */

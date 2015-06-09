@@ -7,6 +7,8 @@
 
 #ifndef HARDWARESTUB_HPP_
 #define HARDWARESTUB_HPP_
+#include <hardware2/modules/Antenna.hpp>
+#include <hardware2/modules/ThermalControl.hpp>
 #include "sensors/ISensor.hpp"
 #include "sensors/AttitudeSensor.hpp"
 #include "sensors/DodSensor.hpp"
@@ -42,13 +44,18 @@
 
 class HardwareStub {
 private:
-	ISensor::ISensor* temperatureSensor;
+
 	ISensor::ISensor* dodSensor;
 	ISensor::ISensor* attitudeSensor;
 	ISensor::ISensor* sunlightSensor;
 	ISensor::ISensor* currentSensor;
 
+
+
 public:
+	ISensor::ISensor* temperatureSensor;
+	ThermalControl * thermalControl;
+	Antenna * antenna;
 	int getStatus(int module);
 	int getValue(int module, bool i2c);
 	string getName(int module);
