@@ -6,6 +6,29 @@
  */
 
 #include <hardware/HardwareState.hpp>
+void HardwareState::SetHardware2(HardwareStub * hardware2){
+	this->hardware2 =hardware2;
+}
+
+HardwareState::HardwareState(HardwareStub * hardware2) {
+	// set initial states and values of modules
+	this->hardware2 =hardware2;
+	setEnergy((MIN_PROPER_VOLTAGE + MAX_PROPER_VOLTAGE)/2);
+	setEnergyCurrent(MAX_PROPER_CURRENT);
+	setEnergyStatus(MODULE_ON);
+
+	setTemperature((MAX_PROPER_TEMPERATURE + MIN_PROPER_TEMPERATURE)/2);
+	setTemperatureStatus(MODULE_ON);
+
+	setPayload(1);
+	setPayloadStatus(MODULE_STANDBY);
+	setSband(1);
+	setSbandStatus(MODULE_STANDBY);
+	setSolarPanels(1);
+	setSolarPanelsStatus(MODULE_ON);
+	setThermalControl(1);
+	setThermalControlStatus(MODULE_STANDBY);
+}
 
 HardwareState::HardwareState() {
 	// set initial states and values of modules
@@ -33,7 +56,7 @@ HardwareState::~HardwareState() {
 int HardwareState::getStatus(int module){
 	switch (module){
 	case HW_ENERGY_MODULE:
-		return getEnergyStatus();
+		return hardware2->getStatus(HW_ENERGY_MODULE);
 	case HW_PAYLOAD_MODULE:
 		return getPayloadStatus();
 	case HW_SBAND_MODULE:
@@ -50,7 +73,7 @@ int HardwareState::getStatus(int module){
 int HardwareState::getValue(int module, bool i2c){
 	switch (module){
 	case HW_ENERGY_MODULE:
-		return getEnergy(i2c);
+		return hardware2->getValue(HW_ENERGY_MODULE,i2c);
 	case HW_PAYLOAD_MODULE:
 		return getPayload(i2c);
 	case HW_SBAND_MODULE:
@@ -67,7 +90,7 @@ int HardwareState::getValue(int module, bool i2c){
 string HardwareState::getName(int module){
 	switch (module){
 	case HW_ENERGY_MODULE:
-		return getEnergyName();
+		return hardware2->getName(module);
 	case HW_PAYLOAD_MODULE:
 		return getPayloadName();
 	case HW_SBAND_MODULE:

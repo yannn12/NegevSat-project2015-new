@@ -33,8 +33,9 @@ private:
 	SendReceiveQueue::SendReceiveQueue** send_queues;
 	TLMParser::TLMParser parser;
 
-	HardwareState::HardwareState hardware;
+
 	HardwareStub::HardwareStub hardware2;
+	HardwareState::HardwareState hardware;
 
 	CommandExecutor::CommandExecutor executor;
 	Sampler::Sampler sampler;

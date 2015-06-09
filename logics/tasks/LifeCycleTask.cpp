@@ -21,6 +21,7 @@ using namespace std;
 using namespace stringutils;
 
 LifeCycleTask::LifeCycleTask(WorkQueue::WorkQueue* _rdy_works, SendReceiveQueue::SendReceiveQueue** _send_queues) {
+	this->hardware.SetHardware2(&hardware2);  //#308458272
 	rdy_works = _rdy_works;
 	send_queues = _send_queues;
 	samples_counter = 0;

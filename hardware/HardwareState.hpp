@@ -16,6 +16,7 @@
 #include "ThermalControlModule.hpp"
 #include <string>
 #include "logics/NegevSatConstants.hpp"
+#include <hardware2/HardwareStub.hpp>
 
 #define HW_ENERGY_MODULE				0
 #define HW_PAYLOAD_MODULE				1
@@ -37,6 +38,7 @@ using namespace std;
 class HardwareState {
 private:
 	//TODO change static type to HWModule
+	HardwareStub * hardware2;
 	TemperatureModule::TemperatureModule temperature;
 	EnergyModule::EnergyModule energy;
 	SbandModule::SbandModule sband;
@@ -45,8 +47,10 @@ private:
 	ThermalControlModule::ThermalControlModule thermal_control;
 
 public:
+	HardwareState(HardwareStub * hardware2);
 	HardwareState();
 	virtual ~HardwareState();
+	void SetHardware2(HardwareStub * hardware2); // #308458272
 	int getStatus(int module);
 	int getValue(int module, bool i2c);
 	string getName(int module);
