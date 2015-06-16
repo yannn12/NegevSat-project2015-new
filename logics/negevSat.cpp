@@ -94,7 +94,7 @@ rtems_task Init(rtems_task_argument )
 {
 	set_time();
 
-	PacketFactory::factory = new XmlPacketFactory();
+	PacketFactory::factory = new BinPacketFactory();
 
 	if(tests){
 		//AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
