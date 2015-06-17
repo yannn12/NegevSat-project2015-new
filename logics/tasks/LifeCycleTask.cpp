@@ -58,14 +58,21 @@ void LifeCycleTask::control_command(){
 
 
 		int attitude = hardware2.getValue(HW_ATTITUDE_MODULE,false);
+
+
 		if (attitude > MIN_ATTITUDE_ENTERING_SAFE){
-			printf(" * LifeCycle TASK:: control_command - SUN POINTING *\n");
-			attitude--;
-			printf(" * LifeCycle TASK:: control_command - FIXING SPINRATE to %d  *\n", attitude);
+			hardware2.attitudeControler->StopIncreaseSpinRate();
+			hardware2.attitudeControler->StartReduceSpinRate();
+
 		}
 		else if(attitude<MAX_ATTITUDE_ENTERING_SAFE){
-			attitude++;
-			printf(" * LifeCycle TASK:: control_command - FIXING SPINRATE to %d  *\n", attitude);
+			hardware2.attitudeControler->StopReduceSpinRate();
+			hardware2.attitudeControler->StartIncreaseSpinRate();
+
+		}
+		else{
+			hardware2.attitudeControler->StopReduceSpinRate();
+			hardware2.attitudeControler->StopIncreaseSpinRate();
 		}
 		hardware2.setValue(HW_ATTITUDE_MODULE,attitude);
 
@@ -85,6 +92,7 @@ void LifeCycleTask::control_command(){
 		}
 
 	}
+	hardware2.attitudeControler->WorkCycle();
 	hardware2.thermalControl->WorkCycle();
 	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE){
 		//printf(" * LifeCycle TASK:: control_command - EARTH POINTING *\n");

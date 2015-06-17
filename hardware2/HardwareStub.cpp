@@ -7,6 +7,7 @@
 
 #include <hardware2/HardwareStub.hpp>
 #include <hardware2/modules/ThermalControlStub.hpp>
+#include <hardware2/modules/AttitudeControlStub.hpp>
 #include "sensors/AttitudeSensor.hpp"
 #include "sensors/DodSensor.hpp"
 #include "sensors/SunSensor.hpp"
@@ -20,6 +21,7 @@ HardwareStub::HardwareStub() {
 	this->temperatureSensor = new TemperatureSensor();
 	this->currentSensor = new CurrentSensor();
 	this->thermalControl = new ThermalControlStub(this);
+	this->attitudeControler=new AttitudeControlStub(this);
 	this->antenna = new Antenna();
 }
 
