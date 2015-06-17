@@ -444,8 +444,8 @@ void LifeCycleTask::module_ctrl(){
 	if (modules_request.get_request_set_energy_new() == TURN_ON){
 
 		//	hardware.setEnergy(low_en);   #308458272
-			hardware2.setValue(HW_ENERGY_MODULE,energy_value);
-			modules_request.request_set_energy_new(NO_CHANGE);
+			hardware2.setValue(HW_ENERGY_MODULE,modules_request.get_energy_to_set());
+			modules_request.request_set_energy_new(NO_CHANGE,0);
 	}
 
 	if (modules_request.get_request_set_temp() == TURN_ON){
@@ -458,8 +458,8 @@ void LifeCycleTask::module_ctrl(){
 	if (modules_request.get_attitude_new_request() == TURN_ON){
 
 		//	hardware.setEnergy(low_en);   #308458272
-			hardware2.setValue(HW_ATTITUDE_MODULE,spinrate_value);
-			modules_request.request_set_attitude_new(NO_CHANGE);
+			hardware2.setValue(HW_ATTITUDE_MODULE,modules_request.get_attitude_to_set());
+			modules_request.request_set_attitude_new(NO_CHANGE,0);
 	}
 }
 

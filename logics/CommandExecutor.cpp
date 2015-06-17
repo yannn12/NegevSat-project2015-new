@@ -130,12 +130,12 @@ void CommandExecutor::execute(WorkDescription::WorkDescription work){
 		break;
 	case SET_ENERGY_NEW:
 		printf(" * LifeCycle TASK::CommandExecutor: SET_ENERGY_NEW Command *\n");
-		modules_request->request_set_energy_new(TURN_ON);
+		modules_request->request_set_energy_new(TURN_ON,work.getPriority());
 		break;
 
 	case SET_SPINRATE_NEW:
 		printf(" * LifeCycle TASK::CommandExecutor: SET_SPINRATE_NEW Command *\n");
-		modules_request->request_set_attitude_new(TURN_ON);
+		modules_request->request_set_attitude_new(TURN_ON,work.getPriority());
 		break;
 	default:
 		printf(" * LifeCycle TASK::CommandExecutor: Illegal command in work! *\n");

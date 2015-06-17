@@ -22,10 +22,12 @@ private:
 	// XXX SIMULATOR FIELDS XXX
 	int set_temp_request;
 	int set_energy_request;
-	int set_energy_new_request;
 	int connected_request;
 
+	int set_energy_new_request;
+	int energy_to_set;
 	int set_attitude_new_request;
+	int attitude_to_set;
 
 public:
 	ModulesOperationRequest(){
@@ -86,12 +88,14 @@ public:
 		set_energy_request = action;
 	}
 
-	void request_set_energy_new(int action){
+	void request_set_energy_new(int action,int energy){
 		set_energy_new_request = action;
+		this->energy_to_set=energy;
 	}
 
-	void request_set_attitude_new(int action){
+	void request_set_attitude_new(int action,int attitude){
 		set_attitude_new_request = action;
+		this->attitude_to_set=attitude;
 	}
 
 	int get_request_set_energy(){
@@ -103,6 +107,12 @@ public:
 	}
 	int get_attitude_new_request(){
 		return	set_attitude_new_request;
+	}
+	int get_energy_to_set(){
+			return	energy_to_set;
+	}
+	int get_attitude_to_set(){
+			return	attitude_to_set;
 	}
 
 	virtual ~ModulesOperationRequest();
