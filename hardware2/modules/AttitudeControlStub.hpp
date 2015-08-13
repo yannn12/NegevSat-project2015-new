@@ -11,6 +11,7 @@
 #include <hardware2/HardwareStub.hpp>
 #include <hardware2/modules/AttitudeControl.hpp>
 
+
 class AttitudeControlStub : public AttitudeControl {
 public:
 	virtual void StartReduceSpinRate();

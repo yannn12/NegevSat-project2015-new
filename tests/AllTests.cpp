@@ -51,8 +51,22 @@ char* AllTests::all_tests(){
 			mu_run_test(temperatureSensorTest.runTests);
 	}
 	if(type_tests & CURRENT_SENSORE_TESTS){
-				printf ("CURRENT_SENSORE_TESTS\n");
-				mu_run_test(currentSensorTests.runTests);
+			printf ("CURRENT_SENSORE_TESTS\n");
+			mu_run_test(currentSensorTests.runTests);
+	}
+
+
+	if(type_tests & ATTITUDE_CONTROL_TESTS){
+			printf ("ATTITUDE_CONTROL_TESTS\n");
+			mu_run_test(attitudeControlTest.runTests);
+	}
+	if(type_tests & THERMAL_CONTROL_TESTS){
+			printf ("THERMAL_CONTROL_TESTS\n");
+			mu_run_test(thermalControlTest.runTests);
+	}
+	if(type_tests & ANTENA_TESTS){
+			printf ("ANTENA_TESTS\n");
+			mu_run_test(antennaTest.runTests);
 	}
 
 

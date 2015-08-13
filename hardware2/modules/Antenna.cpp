@@ -30,6 +30,14 @@ void Antenna::TurnOff(){
 	this->power=false;
 	printf("Module Antenna - Turn OFF");
 }
+
+bool Antenna::getStatus(){
+	return this->status;
+}
+bool Antenna::getPower(){
+	return this->status;
+}
+
 Antenna::~Antenna() {
 	// TODO Auto-generated destructor stub
 }

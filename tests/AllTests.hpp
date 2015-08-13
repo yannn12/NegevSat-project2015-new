@@ -24,6 +24,10 @@
 #include <tests/hardware2test/sensorsTest/SunSensorTest.hpp>
 #include <tests/hardware2test/sensorsTest/TemperatureSensorTest.hpp>
 
+#include <tests/hardware2test/modulesTest/AttitudeControlTest.hpp>
+#include <tests/hardware2test/modulesTest/ThermalControlTest.hpp>
+#include <tests/hardware2test/modulesTest/AntennaTest.hpp>
+
 #define ALL_TESTS					 	0xFFFF
 
 #define CMD_PARSER_TESTS				0x0001
@@ -39,6 +43,10 @@
 #define SUN_SENSORE_TESTS		    	0x0200
 #define TEMPERATURESENSOR_SENSORE_TESTS	0x0400
 #define CURRENT_SENSORE_TESTS			0x0800
+
+#define ATTITUDE_CONTROL_TESTS			0x1000
+#define THERMAL_CONTROL_TESTS			0x2000
+#define ANTENA_TESTS					0x4000
 
 class AllTests {
 private:
@@ -56,6 +64,9 @@ private:
 	SunSensorTest::SunSensorTest sunSensorTest;
 	TemperatureSensorTest::TemperatureSensorTest temperatureSensorTest;
 
+	AttitudeControlTest::AttitudeControlTest attitudeControlTest;
+	ThermalControlTest::ThermalControlTest thermalControlTest;
+	AntennaTest::AntennaTest antennaTest;
 public:
 	AllTests(int _type);
 	virtual ~AllTests();

@@ -17,6 +17,9 @@ public:
 	void Close();
 	void TurnOn();
 	void TurnOff();
+
+	bool getStatus();
+	bool getPower();
 	Antenna();
 	virtual ~Antenna();
 };
