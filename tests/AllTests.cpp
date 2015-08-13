@@ -34,6 +34,28 @@ char* AllTests::all_tests(){
 	if (type_tests & SEND_RECEIVE_TESTS)
 		mu_run_test(sendreceivequeuetests.runTests);
 
+	if(type_tests & ATTITUDE_SENSORE_TESTS){
+		printf ("ATTITUDE_SENSORE_TESTS\n");
+		mu_run_test(attitudeSensortests.runTests);
+	}
+	if(type_tests & DOD_SENSORE_TESTS){
+			printf ("DOD_SENSORE_TESTS\n");
+			mu_run_test(dodSensorTests.runTests);
+	}
+	if(type_tests & SUN_SENSORE_TESTS){
+			printf ("SUN_SENSORE_TESTS\n");
+			mu_run_test(sunSensorTest.runTests);
+	}
+	if(type_tests & TEMPERATURESENSOR_SENSORE_TESTS){
+			printf ("TEMPERATURESENSOR_SENSORE_TESTS\n");
+			mu_run_test(temperatureSensorTest.runTests);
+	}
+	if(type_tests & CURRENT_SENSORE_TESTS){
+				printf ("CURRENT_SENSORE_TESTS\n");
+				mu_run_test(currentSensorTests.runTests);
+	}
+
+
 	return 0;
 }
 

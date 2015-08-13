@@ -48,6 +48,7 @@
 #include "logics/tasks/StateMachineTask.hpp"
 #include "logics/tasks/LifeCycleTask.hpp"
 #include "data_protocol/WorkQueue.hpp"
+#include "data_protocol/binary_protocol/BinPacketFactory.hpp"
 #include <stdio.h>
 #include "tests/AllTests.hpp"
 #include "utils/timeutils.hpp"
@@ -57,7 +58,7 @@ using namespace stringutils;
 using namespace timeutils;
 using namespace std;
 
-bool tests = false;
+bool tests = true;
 
 rtemsTask::rtemsTask* task_table[NUMBER_OF_TASKS];
 rtems_time_of_day current_time;
@@ -94,11 +95,11 @@ rtems_task Init(rtems_task_argument )
 {
 	set_time();
 
-	PacketFactory::factory = new XmlPacketFactory();
+	PacketFactory::factory = new BinPacketFactory();
 
 	if(tests){
 		//AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
-		AllTests::AllTests tests(/*CMD_PARSER_TESTS|*/TLM_PARSER_TESTS|SEND_TESTS|RECEIVE_TESTS|VALIDATOR_TESTS|WORK_QUEUE_TESTS|SEND_RECEIVE_TESTS);
+		AllTests::AllTests tests(ATTITUDE_SENSORE_TESTS|DOD_SENSORE_TESTS|SUN_SENSORE_TESTS|TEMPERATURESENSOR_SENSORE_TESTS|CURRENT_SENSORE_TESTS);
 		tests.run_all_tests();
 	}
 
