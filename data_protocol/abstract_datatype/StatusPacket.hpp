@@ -17,7 +17,7 @@ enum Status {ON,MALFUNCTION,NON_OPERATIONAL,STANDBY};
 
 
 namespace Component {
-enum Component {Energy,Payload,Sband,Temperature,SolarPanels,ThermalControl};
+enum Component {Energy,Payload,Sband,Temperature,SolarPanels,ThermalControl,Attitude};
 
 
 }  // namespace Component
@@ -25,7 +25,7 @@ enum Component {Energy,Payload,Sband,Temperature,SolarPanels,ThermalControl};
 
 
 
-static const char * ComponentStrings[] = { "Energy", "Payload", "Sband", "Temperature", "SolarPanels","ThermalControl"};
+static const char * ComponentStrings[] = { "Energy", "Payload", "Sband", "Temperature", "SolarPanels","ThermalControl","Attitude"};
 
 static const char * StatusStrings[] = { "ON","MALFUNCTION","NON_OPERATIONAL", "STANDBY"};
 

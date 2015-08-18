@@ -47,6 +47,15 @@ bool UartCommunicationHandler::send(char* buffer, int length){
 	if(fixedBuffer.size()<=0)
 		return false;
 	memcpy(temp2,&fixedBuffer[0],fixedBuffer.size());
+
+
+	for(int i=0;i<fixedBuffer.size();i++){
+		unsigned char aa= (unsigned char)fixedBuffer[i];
+		unsigned int y = (unsigned int)aa;
+		printf ("%d,",y);
+
+	}
+	printf ("\n");
 	int numBytes = write(fd, &fixedBuffer[0], fixedBuffer.size());
 
 	if (numBytes < 0) {
@@ -70,7 +79,7 @@ vector<char> UartCommunicationHandler::receive(){
 	}
 	//printf ("\nOpened COM1, fd=%d\n", fd);
 	numBytes = read(fd,buffer,BUFF_SIZE-1);
-	numBytes = restoreDelimiter(buffer,numBytes);
+	//numBytes = restoreDelimiter(buffer,numBytes);
 	if (numBytes < 0) {
 		//printf ("receive error!!!\n");
 		close(fd);

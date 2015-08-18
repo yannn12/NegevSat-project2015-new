@@ -94,7 +94,7 @@ void LifeCycleTask::control_command(){
 	}
 	hardware2.attitudeControler->WorkCycle();
 	hardware2.thermalControl->WorkCycle();
-	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE){
+	if (state == REGULAR_OPS_STATE || state == FACING_GROUND_STATE||state ==IDLE_STATE_EVENT){
 		//printf(" * LifeCycle TASK:: control_command - EARTH POINTING *\n");
 	}
 	//in INIT and STANDBY modes no actions to take
@@ -181,6 +181,8 @@ void LifeCycleTask::control_unit_samples(){
 	statPacket->getComponentsInfo().push_back(compInfo);
 	sampler.createStatusSample(compInfo,Component::ThermalControl);
 	statPacket->getComponentsInfo().push_back(compInfo);
+	sampler.createStatusSample(compInfo,Component::Attitude);
+	statPacket->getComponentsInfo().push_back(compInfo);
 
 	samples_counter++;
 
@@ -194,13 +196,13 @@ void LifeCycleTask::control_unit_samples(){
 		send_queues[SENDQ_ENERGY_INDEX]->enqueue(resultEne);
 		send_queues[SENDQ_TEMP_INDEX]->enqueue(resultTemps);
 		samples_counter = 0;
-
 	}
+//	if(state == FACING_GROUND_STATE){
 	vector<char> resultStatus;
 	statPacket->toBytes(resultStatus);
 	//printf("STATIC_STR:%s\n",&resultStatus[0]);
 	send_queues[SENDQ_STATIC_INDEX]->enqueue(resultStatus);
-
+//	}
 	/*
 	//printf(" * LifeCycle TASK:: control_unit_samples *\n");
 	if (samples_counter == 0){
@@ -279,9 +281,9 @@ void LifeCycleTask::logics(){
 	}
 	//if (state == SAFE_STATE && hardware.getEnergyStatus() == MODULE_ON){ #308458272
 	if (state == SAFE_STATE &&
-			hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_OK&&
-			hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_OK&&
-			hardware2.getStatus(HW_TEMP_MODULE) == MODULE_OK){
+			hardware2.getStatus(HW_ENERGY_MODULE) == MODULE_ON&&
+			hardware2.getStatus(HW_ATTITUDE_MODULE) == MODULE_ON&&
+			hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
 		out = MOVE_TO_OP_EVENT;
 		event.send(*(task_table[STATE_MACHINE_TASK_INDEX]),out);
 	}
@@ -318,17 +320,17 @@ void LifeCycleTask::monitoring(){
 			hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MALFUNCTION);
 	}
 	else if (dod> MAX_DOD_FOR_EXITING_SAFE && dod <= MIN_DOD_FOR_ENTERING_SAFE){
-				hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MID_MALFUNCTION);
+				hardware2.setStatus(HW_ENERGY_MODULE,MODULE_MALFUNCTION);
 	}
 	else {
-		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_OK);
+		hardware2.setStatus(HW_ENERGY_MODULE,MODULE_ON);
 	}
 
 
 	// attitude monitoring: ----------------------------
 
 	if(attitude >= MAX_ATTITUDE_ENTERING_SAFE && attitude <= MIN_ATTITUDE_ENTERING_SAFE){
-		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_OK);
+		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_ON);
 	}
 	else{
 		hardware2.setStatus(HW_ATTITUDE_MODULE,MODULE_MALFUNCTION);
@@ -347,7 +349,7 @@ void LifeCycleTask::monitoring(){
 			hardware.setTemperatureStatus(MODULE_ON); #308458272
 	}*/
 	if (temp <= MAX_PROPER_TEMPERATURE){
-		hardware2.setStatus(HW_TEMP_MODULE,MODULE_OK);
+		hardware2.setStatus(HW_TEMP_MODULE,MODULE_ON);
 	}
 }
 
@@ -381,9 +383,10 @@ void LifeCycleTask::module_ctrl(){
 	}
 
 	if(modules_request.get_payload_request() == TURN_ON
-			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE)
+			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE||state ==IDLE_STATE_EVENT)
 	//		&& hardware.getTemperatureStatus() == MODULE_ON){ #308458272
-			&& hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
+	//		&& hardware2.getStatus(HW_TEMP_MODULE) == MODULE_ON){
+		){
 		hardware.setPayloadStatus(MODULE_ON);
 		modules_request.request_payload(NO_CHANGE);
 	}
@@ -394,9 +397,10 @@ void LifeCycleTask::module_ctrl(){
 	}
 
 	if(modules_request.get_sband_request() == TURN_ON
-			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE)
+			&& (state == FACING_GROUND_STATE || state == REGULAR_OPS_STATE||state ==IDLE_STATE_EVENT)
 			//&& hardware.getTemperatureStatus() == MODULE_ON){	#308458272
-			&& hardware2.getStatus(HW_TEMP_MODULE)== MODULE_ON){
+		//	&& hardware2.getStatus(HW_TEMP_MODULE)== MODULE_ON){
+		){
 		hardware.setSbandStatus(MODULE_ON);
 		modules_request.request_sband(NO_CHANGE);
 	}

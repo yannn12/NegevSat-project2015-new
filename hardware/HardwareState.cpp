@@ -64,9 +64,11 @@ int HardwareState::getStatus(int module){
 	case HW_SOLARP_MODULE:
 		return getSolarPanelsStatus();
 	case HW_TEMP_MODULE:
-		return getTemperatureStatus();
+		return hardware2->getStatus(HW_TEMP_MODULE);
 	case HW_TERMAL_CTRL_MODULE:
 		return getThermalControlStatus();
+	case HW_ATTITUDE_MODULE:
+		return hardware2->getStatus(HW_ATTITUDE_MODULE);
 	}
 }
 
@@ -81,9 +83,12 @@ int HardwareState::getValue(int module, bool i2c){
 	case HW_SOLARP_MODULE:
 		return getSolarPanels(i2c);
 	case HW_TEMP_MODULE:
-		return getTemperature(i2c);
+		return hardware2->getValue(HW_TEMP_MODULE,i2c);
 	case HW_TERMAL_CTRL_MODULE:
 		return getThermalControl(i2c);
+	case HW_ATTITUDE_MODULE:
+			return hardware2->getValue(HW_ATTITUDE_MODULE,i2c);
+
 	}
 }
 
@@ -98,8 +103,11 @@ string HardwareState::getName(int module){
 	case HW_SOLARP_MODULE:
 		return getSolarPanelsName();
 	case HW_TEMP_MODULE:
-		return getTemperatureName();
+		return hardware2->getName(module);
 	case HW_TERMAL_CTRL_MODULE:
 		return getThermalControlName();
+	case HW_ATTITUDE_MODULE:
+		return hardware2->getName(module);
+
 	}
 }

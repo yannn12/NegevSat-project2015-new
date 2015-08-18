@@ -20,7 +20,7 @@ using namespace std;
 MPTask::MPTask(SendReceiveQueue::SendReceiveQueue* receiveQ, WorkQueue::WorkQueue* _works) {
 	receive_queue = receiveQ;
 	works = _works;
-	parser = new BinCMDParser();
+	parser = new XmlCMDParser();
 }
 
 MPTask::~MPTask() {
