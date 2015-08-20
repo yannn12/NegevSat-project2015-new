@@ -15,27 +15,27 @@ Antenna::Antenna() {
 
 void Antenna::Open(){
 	this->status=true;
-	printf("Module Antenna - Open Antenna");
+	printf("Module Antenna - Open Antenna\n");
 
 }
 void Antenna::Close(){
 	this->status=false;
-	printf("MODULE ANTENNA - Close Antenna");
+	printf("MODULE ANTENNA - Close Antenna\n");
 }
 void Antenna::TurnOn(){
 	this->power=true;
-	printf("Module Antenna - Turn ON");
+	printf("Module Antenna - Turn ON\n");
 }
 void Antenna::TurnOff(){
 	this->power=false;
-	printf("Module Antenna - Turn OFF");
+	printf("Module Antenna - Turn OFF\n");
 }
 
 bool Antenna::getStatus(){
 	return this->status;
 }
 bool Antenna::getPower(){
-	return this->status;
+	return this->power;
 }
 
 Antenna::~Antenna() {
