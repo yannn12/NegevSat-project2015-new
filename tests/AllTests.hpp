@@ -9,6 +9,9 @@
 #define ALLTESTS_HPP_
 
 #include <stdio.h>
+#include <tests/CommunicationTests/BinEnergyPacketTest.hpp>
+#include <tests/CommunicationTests/BinStatusPacketTests.hpp>
+#include <tests/CommunicationTests/BinTempsPacketTests.hpp>
 #include "minunit.h"
 #include "CMDParserTests.hpp"
 #include "TLMParserTests.hpp"
@@ -48,6 +51,10 @@
 #define THERMAL_CONTROL_TESTS			0x2000
 #define ANTENA_TESTS					0x4000
 
+#define ENERGYPACKET_TEST				0x8000
+#define STATUSPACKET_TEST				0x10000
+#define TEMPSPACKET_TEST				0x20000
+
 class AllTests {
 private:
 	int type_tests;
@@ -67,6 +74,10 @@ private:
 	AttitudeControlTest::AttitudeControlTest attitudeControlTest;
 	ThermalControlTest::ThermalControlTest thermalControlTest;
 	AntennaTest::AntennaTest antennaTest;
+
+	BinEnergyPacketTest::BinEnergyPacketTest enePacketTests;
+	BinStatusPacketTests::BinStatusPacketTests statusPacketTests;
+	BinTempsPacketTests::BinTempsPacketTests tempsPacketTests;
 public:
 	AllTests(int _type);
 	virtual ~AllTests();

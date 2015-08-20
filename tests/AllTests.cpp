@@ -69,6 +69,22 @@ char* AllTests::all_tests(){
 			mu_run_test(antennaTest.runTests);
 	}
 
+	if(type_tests & ENERGYPACKET_TEST){
+			printf("ENERGYPACKET_TEST\n");
+			mu_run_test(enePacketTests.runTests);
+
+	}
+	if(type_tests & STATUSPACKET_TEST){
+			printf("STATUSPACKET_TEST\n");
+			mu_run_test(statusPacketTests.runTests);
+
+	}
+	if(type_tests & TEMPSPACKET_TEST){
+			printf("TEMPSPACKET_TEST\n");
+			mu_run_test(tempsPacketTests.runTests);
+
+	}
+
 
 	return 0;
 }
