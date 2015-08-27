@@ -58,7 +58,7 @@ using namespace stringutils;
 using namespace timeutils;
 using namespace std;
 
-bool tests = true;
+bool tests = false;
 
 rtemsTask::rtemsTask* task_table[NUMBER_OF_TASKS];
 rtems_time_of_day current_time;
